@@ -1,0 +1,86 @@
+<%- include('../partials/html-head') %>
+<link rel="stylesheet" href="/stylesheets/flights/show.css" />
+<%- include('../partials/nav') %>
+
+<main>
+  <h1><%= title %></h1>
+  <a href="/flights/<%= flight._id %>/edit">
+    <button type="submit">Edit Flight</button>
+  </a>
+  <section>
+    <div>Airline: </div>
+    <div><%= flight.airline %></div>
+    <div>Airport: </div>
+    <div><%= flight.airport %></div>
+    <div>Flight #: </div>
+    <div><%= flight.flightNo %></div>
+    <div>Departure:</div>
+    <div><%= flight.departs %></div>
+    <div>Meals:</div>
+    <ul>
+      <% flight.meals.forEach(mealOption => { %>
+        <li><%= mealOption.name %></li>
+      <% }) %>
+    </ul>
+  </section>
+
+  <form 
+    id="add-meal-to-flight" 
+    action="/flights/<%= flight._id %>/meals" 
+    method="POST"
+  >
+    <select name="mealId">
+      <% meals.forEach(meal => { %>
+        <option value="<%= meal._id %>"><%= meal.name %></option>
+      <% }) %>
+    </select>
+    <button type="submit">Add to Meal Options</button>
+  </form>
+
+  <h2>Tickets</h2>
+  <form 
+    id="add-ticket" 
+    action="/flights/<%= 
+    flight._id %>/tickets" 
+    method="POST"
+  >
+    <label for="seat-input">Seat (A1-F99):</label>
+    <input type="String" name="seat" required pattern="[A-F][1-9]\d?" id="seat-input">
+    <label for="price-input">Price: $</label>
+    <input type="Number" name="price" id="price-input">
+    <a href="/flights/<%= flight._id %>/show">
+      <button type="submit">Add Ticket</button>
+    </a>
+  </form>
+
+  <% if (flight.tickets.length) { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Seat</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% flight.tickets.forEach(function(ticket) { %>
+          <tr>
+            <td><%= ticket.seat %></td>
+            <td><%= ticket.price %></td>
+            <td>
+              <form action="/flights/<%= flight._id %>/tickets/<%= ticket._id %>?_method=DELETE" method="POST">
+                <button>X</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+        <tr>
+          <td colspan="2"></td>
+        </tr>
+      </tbody>
+    </table>
+  <% } else { %>
+    <h3>No Tickets Yet</h3>
+  <% } %>
+</main>
+
+<%- include("../partials/footer") %>
